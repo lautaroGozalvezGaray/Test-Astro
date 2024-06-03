@@ -1,0 +1,55 @@
+---
+//se peude ejecutar el js que se quiera
+
+import { type APISpaceXResponce} from '../types/api'
+import CardLaunch from '../components/cardLaunch.astro'
+
+const res = await fetch('https://api.spacexdata.com/v5/launches/query', 
+{
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        query: {},
+        options: {
+            sort:{
+                date_unix: 'asc'
+            },
+            limit:15,
+        },
+    }),
+})
+
+const { docs: launches } = await res.json() as APISpaceXResponce;
+console.log(launches);
+
+
+///console.log(data)
+//astro no ejecuta nada de js del lado del cliente por defecto. Lo hace en el server o en tiempo
+// de compilacion
+
+---
+ 
+<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+
+    {
+        launches.map(({id, links ,details, flight_number: flightNumber, success}) => (
+            // <article>
+            //     <img src={launch.links.patch.small} alt={launch.name} />
+            //     <h2>Launch #{launch.id}</h2>
+            // </article>
+
+            <CardLaunch 
+                id = {id},
+                img = {links.patch.small},
+                details = {details},
+                flightNumber = {flightNumber},
+                success = {success},
+            />
+        ))
+    }
+</div>
+
+
+
